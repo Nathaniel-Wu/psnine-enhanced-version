@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         PSN中文网功能增强
 // @namespace    https://swsoyee.github.io
-// @version      1.0.35
+// @version      1.0.36
 // @description  数折价格走势图，显示人民币价格，奖杯统计和筛选，发帖字数统计和即时预览，楼主高亮，自动翻页，屏蔽黑名单用户发言，被@用户的发言内容显示等多项功能优化P9体验
 // eslint-disable-next-line max-len
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAMFBMVEVHcEw0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNs0mNuEOyNSAAAAD3RSTlMAQMAQ4PCApCBQcDBg0JD74B98AAABN0lEQVRIx+2WQRaDIAxECSACWLn/bdsCIkNQ2XXT2bTyHEx+glGIv4STU3KNRccp6dNh4qTM4VDLrGVRxbLGaa3ZQSVQulVJl5JFlh3cLdNyk/xe2IXz4DqYLhZ4mWtHd4/SLY/QQwKmWmGcmUfHb4O1mu8BIPGw4Hg1TEvySQGWoBcItgxndmsbhtJd6baukIKnt525W4anygNECVc1UD8uVbRNbumZNl6UmkagHeRJfX0BdM5NXgA+ZKESpiJ9tRFftZEvue2cS6cKOrGk/IOLTLUcaXuZHrZDq3FB2IonOBCHIy8Bs1Zzo1MxVH+m8fQ+nFeCQM3MWwEsWsy8e8Di7meA5Bb5MDYCt4SnUbP3lv1xOuWuOi3j5kJ5tPiZKahbi54anNRaaG7YElFKQBHR/9PjN3oD6fkt9WKF9rgAAAAASUVORK5CYII=
@@ -193,7 +193,15 @@
       const duplicatedSchemeRegex2 = /(<a( [^<]+?)?>)((https?:\/\/)+)/g;
       const untaggedUrlRegex = /(?<!((href|src)="|<a( [^<]+?)?>))(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]*))(?!("|<\/a>))/g;// https://stackoverflow.com/a/3809435 & https://stackoverflow.com/a/1547940
       const fixTextLinksOnThePage = (isOn) => {
-        if (isOn && /(\/(topic|gene|qa|battle|trade)\/\d+)|(\/psnid\/.+?\/comment)|(\/my\/notice)|(\/psngame\/\d+\/comment)|(\/trophy\/\d+)/.test(window.location.href)) $('div.content').each((i, e) => { e.innerHTML = e.innerHTML.replace(duplicatedSchemeRegex1, '$1$4').replace(duplicatedSchemeRegex2, '$1$4').replace(untaggedUrlRegex, '<a href="$4" target="_blank">$4</a>'); });
+        const fixLinks = (i, e) => { e.innerHTML = e.innerHTML.replace(duplicatedSchemeRegex1, '$1$4').replace(duplicatedSchemeRegex2, '$1$4').replace(untaggedUrlRegex, '<a href="$4" target="_blank">$4</a>'); };
+        if (isOn) {
+          if (/(\/(topic|gene|qa|battle|trade)\/\d+)|(\/psnid\/.+?\/comment)|(\/my\/notice)|(\/psngame\/\d+\/comment)|(\/trophy\/\d+)/.test(window.location.href)) $('div.content').each(fixLinks);
+          if (/\/zuo\/?($|\?)/g.test(window.location.href)) {
+            $('div.log-content').each(fixLinks);
+            $('div.log-details span.detail-value.moderator').each((i, e) => { e.outerHTML = e.outerHTML.replace(/>\s*([^<]+)\s*</g, '><a href="https://www.psnine.com/psnid/$1" target="_blank">$1</a><'); });
+            $('div.post-info span.detail-value.moderator').each((i, e) => { e.outerHTML = e.outerHTML.replace(/>\s*([^<]+)\s*</g, '><a href="https://www.psnine.com/psnid/$1" target="_blank">$1</a><'); });
+          }
+        }
       };
       // 修复D7VG链接
       const linkReplace = (link, substr, newSubstr) => {
