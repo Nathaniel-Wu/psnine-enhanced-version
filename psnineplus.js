@@ -197,9 +197,9 @@
         if (isOn) {
           if (/(\/(topic|gene|qa|battle|trade)\/\d+)|(\/psnid\/.+?\/comment)|(\/my\/notice)|(\/psngame\/\d+\/comment)|(\/trophy\/\d+)/.test(window.location.href)) $('div.content').each(fixLinks);
           if (/\/zuo\/?($|\?)/g.test(window.location.href)) {
-            $('div.log-content').each(fixLinks);
             $('div.log-details span.detail-value.moderator').each((i, e) => { e.outerHTML = e.outerHTML.replace(/>\s*([^<]+)\s*</g, '><a href="https://www.psnine.com/psnid/$1" target="_blank">$1</a><'); });
-            $('div.post-info span.detail-value.moderator').each((i, e) => { e.outerHTML = e.outerHTML.replace(/>\s*([^<]+)\s*</g, '><a href="https://www.psnine.com/psnid/$1" target="_blank">$1</a><'); });
+            $('div.post-info > div.post-info-item:nth-of-type(1) span.detail-value.moderator').each((i, e) => { e.outerHTML = e.outerHTML.replace(/>\s*([^<]+)\s*</g, '><a href="https://www.psnine.com/psnid/$1" target="_blank">$1</a><'); });
+            $('div.log-content').each(fixLinks);
           }
         }
       };
